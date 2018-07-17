@@ -17,4 +17,11 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="ErrorTextStyle" parent="@android:style/TextAppearance">
+        <item name="android:textSize">@dimen/list_text_size</item>
+        <item name="android:textColor">@color/colorError</item>
+        <item name="android:padding">@dimen/label_padding</item>
+        <item name="android:gravity">center_horizontal</item>
+    </style>
+
 </resources>
