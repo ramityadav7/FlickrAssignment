@@ -2,13 +2,17 @@ package flickr.example.com.flickr.home;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
@@ -23,8 +27,10 @@ import java.util.List;
 import flickr.example.com.flickr.BaseActivity;
 import flickr.example.com.flickr.R;
 import flickr.example.com.flickr.application.FlickrApplication;
+import flickr.example.com.flickr.constants.AppConstants;
 import flickr.example.com.flickr.data.HomeData;
 import flickr.example.com.flickr.data.HomeDataItem;
+import flickr.example.com.flickr.detail.DetailsActivity;
 import flickr.example.com.flickr.utils.AppUtil;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener, HomeAdapter.HomeItemClickHandler{
@@ -70,7 +76,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         homeAdapter = new HomeAdapter(homeDataItems, this);
         homeData.setHomeDataItems(homeDataItems);
 
-        final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        int orientation = this.getResources().getConfiguration().orientation;
+        int spanCount;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            spanCount = 2;
+        } else {
+            spanCount = 3;
+        }
+
+        final RecyclerView.LayoutManager mLayoutManager = new StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL);
         recyclerViewHome.setLayoutManager(mLayoutManager);
         recyclerViewHome.setAdapter(homeAdapter);
 
@@ -159,6 +173,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void onHomeItemClick(int position) {
+        String imageUrl = homeData.getHomeDataItems().get(position).getThumbnail();
 
+        Intent myIntent = new Intent(MainActivity.this, DetailsActivity.class);
+        myIntent.putExtra(AppConstants.HOME_BUNDLE_DATA_KEY, imageUrl);
+        startActivity(myIntent);
     }
 }

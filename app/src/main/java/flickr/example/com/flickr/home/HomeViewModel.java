@@ -88,8 +88,8 @@ public class HomeViewModel extends ViewModel{
             if(null != media) {
                 String thumbnail = media.getM();
                 if(!TextUtils.isEmpty(thumbnail)) {
-                    homeDataItem.setThumbnail(thumbnail);
-                    homeDataItem.setImageUrl(thumbnail);
+                    homeDataItem.setThumbnail(thumbnail.replace("_m", "_z"));
+                    homeDataItem.setImageUrl(thumbnail.replace("_m", "_b"));
 
                     homeDataItems.add(homeDataItem);
                 }
