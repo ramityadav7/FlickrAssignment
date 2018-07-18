@@ -104,7 +104,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private void loadData(boolean isSearch)
     {
         HomeViewModel homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
-         homeViewModel.setApplication((FlickrApplication) getApplication());
+        homeViewModel.setApplication((FlickrApplication) getApplication());
         homeViewModel.setTag(editTextTag.getText().toString().trim());
         homeViewModel.setUser(editTextUser.getText().toString().trim());
         homeViewModel.setSearch(isSearch);
