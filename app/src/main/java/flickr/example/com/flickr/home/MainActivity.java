@@ -5,19 +5,16 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
@@ -32,6 +29,7 @@ import flickr.example.com.flickr.data.HomeData;
 import flickr.example.com.flickr.data.HomeDataItem;
 import flickr.example.com.flickr.detail.DetailsActivity;
 import flickr.example.com.flickr.utils.AppUtil;
+import flickr.example.com.flickr.utils.UiUtil;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener, HomeAdapter.HomeItemClickHandler{
 
@@ -40,28 +38,32 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private ProgressBar progressBar;
     private RelativeLayout relativeLayoutError;
     private Button buttonReload;
+    private FloatingActionButton fab;
+    private LinearLayout linearLayoutSearch;
+    private EditText editTextUser;
+    private EditText editTextTag;
+    private Button buttonSearch;
 
     private HomeData homeData;
     private HomeAdapter homeAdapter;
+
+    private static final String BUNDLE_KEY_USER = "BUNDLE_KEY_USER";
+    private static final String BUNDLE_KEY_TAG = "BUNDLE_KEY_TAG";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         initView();
-        loadData();
+        if(savedInstanceState != null) {
+            editTextUser.setText(savedInstanceState.getString(BUNDLE_KEY_USER));
+            editTextTag.setText(savedInstanceState.getString(BUNDLE_KEY_TAG));
+        }
+        loadData(false);
     }
 
     private void initView() {
@@ -70,6 +72,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         relativeLayoutError = findViewById(R.id.relativeLayoutError);
         progressBar = findViewById(R.id.progressBar);
         buttonReload = findViewById(R.id.buttonReload);
+        fab = findViewById(R.id.fab);
+        linearLayoutSearch = findViewById(R.id.linearLayoutSearch);
+        editTextTag = findViewById(R.id.editTextTag);
+        editTextUser = findViewById(R.id.editTextUser);
+        buttonSearch = findViewById(R.id.buttonSearch);
 
         homeData = new HomeData();
         List<HomeDataItem> homeDataItems = new ArrayList<>();
@@ -90,12 +97,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
 
         buttonReload.setOnClickListener(this);
+        fab.setOnClickListener(this);
+        buttonSearch.setOnClickListener(this);
     }
 
-    private void loadData()
+    private void loadData(boolean isSearch)
     {
         HomeViewModel homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
-        homeViewModel.setApplication((FlickrApplication) getApplication());
+         homeViewModel.setApplication((FlickrApplication) getApplication());
+        homeViewModel.setTag(editTextTag.getText().toString().trim());
+        homeViewModel.setUser(editTextUser.getText().toString().trim());
+        homeViewModel.setSearch(isSearch);
         homeViewModel.getItems().observe(this, new Observer<HomeData>() {
             @Override
             public void onChanged(@Nullable HomeData homeData) {
@@ -122,6 +134,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private void updateErrorView() {
         if(homeData.isShowError()) {
+            editTextTag.setText("");
+            editTextUser.setText("");
             relativeLayoutError.setVisibility(View.VISIBLE);
             relativeLayoutHome.setVisibility(View.GONE);
         } else {
@@ -143,9 +157,33 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.buttonReload: {
+            case R.id.buttonSearch: {
+                handleSearch();
                 break;
             }
+            case R.id.buttonReload: {
+                loadData(false);
+                break;
+            }
+
+            case R.id.fab: {
+                handleFabFilter();
+                break;
+            }
+        }
+    }
+
+    private void handleSearch() {
+        UiUtil.hideSoftKeyboard(this);
+        linearLayoutSearch.setVisibility(View.GONE);
+        loadData(true);
+    }
+
+    private void handleFabFilter() {
+        if(linearLayoutSearch.getVisibility() == View.VISIBLE) {
+            linearLayoutSearch.setVisibility(View.GONE);
+        } else {
+            linearLayoutSearch.setVisibility(View.VISIBLE);
         }
     }
 
@@ -156,5 +194,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         Intent myIntent = new Intent(MainActivity.this, DetailsActivity.class);
         myIntent.putExtra(AppConstants.HOME_BUNDLE_DATA_KEY, imageUrl);
         startActivity(myIntent);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putString(BUNDLE_KEY_TAG, editTextTag.getText().toString().trim());
+        outState.putString(BUNDLE_KEY_USER, editTextUser.getText().toString().trim());
     }
 }

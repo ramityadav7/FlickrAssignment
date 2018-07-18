@@ -23,13 +23,36 @@ public class HomeViewModel extends ViewModel{
 
     private FlickrApplication flickrApplication;
     private MutableLiveData<HomeData> homeLiveData;
+    private String user;
+    private String tag;
 
     public void setApplication(FlickrApplication flickrApplication) {
         this.flickrApplication = flickrApplication;
     }
 
+    public void setUser(String user) {
+        if(TextUtils.isEmpty(user)) {
+            this.user = null;
+        } else {
+            this.user = user;
+        }
+    }
+
+    public void setTag(String tag) {
+        if(TextUtils.isEmpty(tag)) {
+            this.tag = null;
+        } else {
+            this.tag = tag;
+        }
+    }
+
+    public void setSearch(boolean isSearch) {
+        if(homeLiveData != null)
+            homeLiveData.getValue().setSearch(isSearch);
+    }
+
     public LiveData<HomeData> getItems() {
-        if (homeLiveData == null || homeLiveData.getValue().isShowError()) {
+        if (homeLiveData == null || homeLiveData.getValue().isShowError() || homeLiveData.getValue().isSearch() ) {
             if(homeLiveData == null)
                 homeLiveData = new MutableLiveData<>();
             HomeData homeData = new HomeData();
@@ -45,7 +68,7 @@ public class HomeViewModel extends ViewModel{
 
 
     private void loadHomeData() {
-        Call<Response> call = flickrApplication.getApiService().getImageList(AppConstants.FORMAT_JSON, AppConstants.NO_JSON_CALLBACK, null, null);
+        Call<Response> call = flickrApplication.getApiService().getImageList(AppConstants.FORMAT_JSON, AppConstants.NO_JSON_CALLBACK, user, tag);
 
         call.enqueue(new Callback<Response>() {
             @Override
@@ -54,6 +77,7 @@ public class HomeViewModel extends ViewModel{
                     Response response1 = response.body();
                     HomeData homeData = homeLiveData.getValue();
                     homeData.setShowProgress(false);
+                    homeData.setSearch(false);
                     homeLiveData.setValue(parseHomeData(response1.getItems(), homeData));
                     Log.d("Ramit", response1.toString());
                 } else {
@@ -74,6 +98,7 @@ public class HomeViewModel extends ViewModel{
         HomeData homeData = new HomeData();
         homeData.setShowProgress(false);
         homeData.setShowError(true);
+        homeData.setSearch(false);
         homeLiveData.setValue(homeData);
         Log.d("Ramit", "Failure");
     }

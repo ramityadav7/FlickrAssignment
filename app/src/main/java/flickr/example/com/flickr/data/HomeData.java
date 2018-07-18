@@ -8,6 +8,7 @@ public class HomeData{
     private List<HomeDataItem> homeDataItems;
     private boolean showProgress;
     private boolean showError;
+    private boolean isSearch;
 
     public List<HomeDataItem> getHomeDataItems() {
         return homeDataItems;
@@ -31,5 +32,13 @@ public class HomeData{
 
     public void setShowError(boolean showError) {
         this.showError = showError;
+    }
+
+    public boolean isSearch() {
+        return isSearch;
+    }
+
+    public void setSearch(boolean search) {
+        isSearch = search;
     }
 }
