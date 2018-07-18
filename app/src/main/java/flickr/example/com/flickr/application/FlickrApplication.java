@@ -5,7 +5,6 @@ import android.app.Application;
 import flickr.example.com.flickr.constants.AppConstants;
 import flickr.example.com.flickr.network.ApiService;
 import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -20,11 +19,12 @@ public class FlickrApplication extends Application{
     }
 
     private void initApiService() {
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+//        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+//        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
         OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(logging).build();
+//                .addInterceptor(logging)
+                        .build();
 
 
         Retrofit retrofit = new Retrofit.Builder()
