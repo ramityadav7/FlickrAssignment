@@ -50,14 +50,28 @@
 
         </LinearLayout>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerViewHome"
+        <LinearLayout
+            android:id="@+id/linearLayoutContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/linearLayoutSearch">
-        </android.support.v7.widget.RecyclerView>
+            android:layout_below="@+id/linearLayoutSearch"
+            android:orientation="vertical">
 
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerViewHome"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+            </android.support.v7.widget.RecyclerView>
 
+            <android.support.v4.view.ViewPager
+                android:id="@+id/viewPager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone">
+
+            </android.support.v4.view.ViewPager>
+
+        </LinearLayout>
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"

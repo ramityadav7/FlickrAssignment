@@ -5,12 +5,11 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
@@ -39,14 +38,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private ProgressBar progressBar;
     private RelativeLayout relativeLayoutError;
     private Button buttonReload;
-    private FloatingActionButton fab;
+    private FloatingActionButton fab, fabSwitch;
     private LinearLayout linearLayoutSearch;
     private EditText editTextUser;
     private EditText editTextTag;
     private Button buttonSearch;
+    private ViewPager viewPager;
+    private LinearLayout linearLayoutContainer;
 
     private HomeData homeData;
     private HomeAdapter homeAdapter;
+    private ImageSliderAdapter imageSliderAdapter;
 
     private static final String BUNDLE_KEY_USER = "BUNDLE_KEY_USER";
     private static final String BUNDLE_KEY_TAG = "BUNDLE_KEY_TAG";
@@ -74,10 +76,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         progressBar = findViewById(R.id.progressBar);
         buttonReload = findViewById(R.id.buttonReload);
         fab = findViewById(R.id.fab);
+        fabSwitch = findViewById(R.id.fabSwitch);
         linearLayoutSearch = findViewById(R.id.linearLayoutSearch);
         editTextTag = findViewById(R.id.editTextTag);
         editTextUser = findViewById(R.id.editTextUser);
         buttonSearch = findViewById(R.id.buttonSearch);
+        viewPager = findViewById(R.id.viewPager);
+        linearLayoutContainer = findViewById(R.id.linearLayoutContainer);
 
         homeData = new HomeData();
         List<HomeDataItem> homeDataItems = new ArrayList<>();
@@ -97,8 +102,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         recyclerViewHome.setAdapter(homeAdapter);
 
 
+        imageSliderAdapter = new ImageSliderAdapter(homeDataItems, this);
+        viewPager.setAdapter(imageSliderAdapter);
+
         buttonReload.setOnClickListener(this);
         fab.setOnClickListener(this);
+        fabSwitch.setOnClickListener(this);
         buttonSearch.setOnClickListener(this);
     }
 
@@ -123,6 +132,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     data.clear();
                     data.addAll(homeDataItems);
                     homeAdapter.notifyDataSetChanged();
+                    imageSliderAdapter.notifyDataSetChanged();
                 }
             }
         });
@@ -147,10 +157,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private void updateProgressView() {
         if(homeData.isShowProgress()) {
-            recyclerViewHome.setVisibility(View.GONE);
+            linearLayoutContainer.setVisibility(View.GONE);
             progressBar.setVisibility(View.VISIBLE);
         } else {
-            recyclerViewHome.setVisibility(View.VISIBLE);
+            linearLayoutContainer.setVisibility(View.VISIBLE);
             progressBar.setVisibility(View.GONE);
         }
     }
@@ -171,6 +181,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 handleFabFilter();
                 break;
             }
+
+            case R.id.fabSwitch: {
+                handleSwitchView();
+            }
+        }
+    }
+
+    private void handleSwitchView() {
+        if(viewPager.getVisibility() == View.VISIBLE) {
+            viewPager.setVisibility(View.GONE);
+            recyclerViewHome.setVisibility(View.VISIBLE);
+        } else {
+            viewPager.setVisibility(View.VISIBLE);
+            recyclerViewHome.setVisibility(View.GONE);
         }
     }
 
