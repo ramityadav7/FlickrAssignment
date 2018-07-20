@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -91,7 +92,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             spanCount = 3;
         }
 
-        final RecyclerView.LayoutManager mLayoutManager = new StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL);
+        final RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, spanCount);
         recyclerViewHome.setLayoutManager(mLayoutManager);
         recyclerViewHome.setAdapter(homeAdapter);
 
